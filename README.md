@@ -2,34 +2,36 @@
 api for å lagre strings og tall i en database, og å lese dem ut
 kan kun legge inn nye strings om dagen
 
-singleton med state for å sjekke om man har lov til å skrive tall
+takeaway general
+unit tests should be specific so that it's easy to see what is broken
+static can't be mocked
+classes need interfaces to be mocked
+things need to be injected to be mocked
+integration-tests can still be valuable
 
-lyst til å teste noe i controlleren, men får ikke mocket ut 
+takeaways numbers
 
-mangel på ioc, instansering av avhengigheter overalt (hard wired dependency)
+eveyrything in one class, hard to write isolated tests (if something fails then I'd like to know what it is)
+instantiating dbcontext makes it hard to mock out the database
+everything in the controller means test-code has to know the framework
 
-global state - feks singleton med state som modifiseres og brukes
+takeaways strings
 
-ekstern avhengighet som statisk klasse? singleton? cache?
+sometimes you have to wrap stuff like Random or DateTimeOffset.Now so that it can be controlled
+Injecting BadDomain (and not an interface) means you can't mock it (without making the methods virtual) (is that worse than adding an interface?)
+I want to test my business-logic without making a complex claims-principal object
 
-vanskelig å mocke ut config
-bruk av dbcontext direkte i controlleren - skriv en test på lagring av noe. betyr den at dbcontexten er godt testa? går det an å bruke den feil?
-businesslogikk i controller-laget
+further reading
+law of demeter
+avoid singletons or globals with state
 
-mye stuff i constructor?
 
-service-locator - tvinger oss til å bruke samme dependency-injection opplegg
 
-mer avansert:
-validering på at noe kun er lov om dagen - validerer dette med DateTime.Now()
 
-statisk klasse eller at man instanserer opp noe som gjør masse beregninger
-
-koble til database, connectionstring i config
-
-én testklasse per ting som skal testes - testene laget men bare Assert.Pass og ferdig. Description sier hva som skal testes
-implementasjonen kan ha kommentar som sier noe om hvorfor det er vanskelig
-
-avhengig av klassen (ikke interface ) - får ikke mocket det ut med mindre de er virtual. 
-
-test må håndtere både entity og dto
+ha egne repo/brancher per vanskelighetsgrad
+intro først: litt om test, og hvordan skrive testbar kode
+etter X min: går gjennom numbers, og introdusere strings
+ha en lettlest eksempeltest som funker
+gå gjennom koden kjapt
+hva er mocking og hva kan ikke mockes
+hver test tester bare en ting

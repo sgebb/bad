@@ -1,5 +1,6 @@
 using Bad;
 using Bad.Database;
+using Bad.Domain;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient<BadDomain>();
 
 builder.Services.AddDbContext<BadDbContext>(opt =>
 {
@@ -31,6 +34,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// make sure db is created
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<BadDbContext>();

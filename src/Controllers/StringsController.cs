@@ -9,39 +9,36 @@ namespace Bad.Controllers;
 [Route("[controller]")]
 public class StringsController : ControllerBase
 {
-    private readonly BadDbContext _context;
-    public StringsController(BadDbContext context)
+    private readonly BadDomain _badDomain;
+    public StringsController(BadDomain badDomain)
     {
-        _context = context;
+        _badDomain = badDomain;
     }
 
     [HttpGet("{id}")]
     public ActionResult<IAsyncEnumerable<StringDto>> GetStrings(int id)
     {
-        var domain = new BadDomain(_context);
-        return Ok(domain.GetString(id));
+        return Ok(_badDomain.GetString(id));
     }
 
     [HttpGet]
     public ActionResult<IAsyncEnumerable<StringDto>> GetStrings()
     {
-        var domain = new BadDomain(_context);
-        return Ok(domain.GetAllStrings());
+        return Ok(_badDomain.GetAllStrings());
     }
 
 
     [HttpPost]
-    public async Task<ActionResult<StringDto>> StoreNumber(string submittedString)
+    public async Task<ActionResult<StringDto>> StoreString(string submittedString)
     {
-        var domain = new BadDomain(_context);
-        var storedString = await domain.AddString(submittedString, User);
+        var storedString = await _badDomain.AddString(submittedString, User);
 
         if (storedString == null)
         {
             return BadRequest("Uh not sure why but that was not good enough");
         }
 
-        return Ok(storedString);
+        return Created($"/{storedString.Id}", storedString);
 
     }
 }

@@ -27,26 +27,20 @@ public class NumbersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<IAsyncEnumerable<NumberEntity>>> GetNumber(int id)
+    public async Task<ActionResult<NumberEntity>> GetNumber(int id)
     {
-
         return Ok(await _context
             .Numbers
             .FirstOrDefaultAsync(n => n.Id == id));
     }
 
     [HttpPost]
-    public async Task<ActionResult<NumberEntity>> StoreNumberBetween([FromBody]HighLowNumberDto highLow)
+    public async Task<ActionResult<NumberEntity>> StoreNumberBetween(int value)
     {
-        var rand = new Random();
-        var randomInt = (int)rand.NextInt64(highLow.Low, highLow.High);
-
-        var number = new NumberEntity(randomInt);
+        var number = new NumberEntity(value);
         _context.Numbers.Add(number);
         await _context.SaveChangesAsync();
 
         return Created($"[controller]/{number.Id!.Value}", number);
     }
-
-    public record HighLowNumberDto(int Low, int High);
 }

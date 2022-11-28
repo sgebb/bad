@@ -1,10 +1,11 @@
 ﻿using Bad.Database;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.Versioning;
 using System.Security.Claims;
 
 namespace Bad.Domain
 {
-    public partial class BadDomain : IBadDomain
+    public partial class BadDomain
     {
         private readonly BadDbContext _context;
 
