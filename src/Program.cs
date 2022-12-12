@@ -1,4 +1,3 @@
-using Bad;
 using Bad.Database;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Bad
+namespace Bad.Database
 {
     public static class DbHelper
     {

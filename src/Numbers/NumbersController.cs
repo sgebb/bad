@@ -1,9 +1,7 @@
 using Bad.Database;
-using Bad.Domain.Numbers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace Bad.Controllers;
+namespace Bad.Numbers;
 
 [ApiController]
 [Route("[controller]")]
@@ -23,7 +21,7 @@ public class NumbersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public  ActionResult<NumberEntity> GetNumber(int id)
+    public ActionResult<NumberEntity> GetNumber(int id)
     {
         return Ok(_numbersDataAccess.GetNumber(id));
     }

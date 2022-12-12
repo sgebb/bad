@@ -1,6 +1,5 @@
-using Bad.Controllers;
 using Bad.Database;
-using Bad.Domain.Numbers;
+using Bad.Numbers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -24,7 +23,7 @@ namespace Bad.Tests
         }
 
         [Fact(DisplayName = "API can store a number and fetch it afterwards")]
-        public async Task TestControllerStoreAndFetch()
+        public void TestControllerStoreAndFetch()
         {
             var numbersController = new NumbersController(_numbersDataAccess);
             var desiredNumber = 1;
