@@ -1,4 +1,5 @@
 using Bad.Database;
+using Bad.Domain.Numbers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,36 +9,34 @@ namespace Bad.Controllers;
 [Route("[controller]")]
 public class NumbersController : ControllerBase
 {
-    private readonly BadDbContext _badDbContext;
+    private readonly INumbersDataAccess _numbersDataAccess;
 
-    public NumbersController(BadDbContext badDbContext)
+    public NumbersController(INumbersDataAccess numbersDataAccess)
     {
-        _badDbContext = badDbContext;
+        _numbersDataAccess = numbersDataAccess;
     }
 
     [HttpGet]
     public ActionResult<IAsyncEnumerable<NumberEntity>> GetNumbers()
     {
-        return Ok(_badDbContext
-            .Numbers
-            .AsAsyncEnumerable());
+        return Ok(_numbersDataAccess.GetNumbersAsAsyncEnumerable());
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<NumberEntity>> GetNumber(int id)
+    public  ActionResult<NumberEntity> GetNumber(int id)
     {
-        return Ok(await _badDbContext
-            .Numbers
-            .FirstOrDefaultAsync(n => n.Id == id));
+        return Ok(_numbersDataAccess.GetNumber(id));
     }
 
     [HttpPost]
-    public async Task<ActionResult<NumberEntity>> PostNumber(int value)
+    public ActionResult<NumberEntity> PostNumber(int value)
     {
-        var number = new NumberEntity(value);
-        _badDbContext.Numbers.Add(number);
-        await _badDbContext.SaveChangesAsync();
+        var created = _numbersDataAccess.StoreNumber(value);
 
-        return Created($"[controller]/{number.Id!.Value}", number);
+        if (created != null)
+        {
+            return Created($"[controller]/{created.Id!.Value}", created);
+        }
+        return BadRequest(); //?
     }
 }
