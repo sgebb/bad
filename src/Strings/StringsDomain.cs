@@ -6,28 +6,21 @@ namespace Bad.Strings;
 
 public class StringsDomain
 {
-    private readonly BadDbContext _context;
+    private readonly StringsDataAccess _dataAccess;
 
-    public StringsDomain(BadDbContext context)
+    public StringsDomain(StringsDataAccess dataAccess)
     {
-        _context = context;
+        _dataAccess = dataAccess;
     }
 
     public IAsyncEnumerable<StringEntity> GetAllStrings()
     {
-        return _context
-            .Strings
-            .AsAsyncEnumerable();
+        return _dataAccess.GetAllStrings();
     }
 
     public StringEntity? GetString(int id)
     {
-        var dbString = _context
-            .Strings
-            .AsNoTracking()
-            .FirstOrDefault(s => s.Id == id);
-
-        return dbString;
+        return _dataAccess.GetString(id);
     }
 
     public StringEntity? AddString(string value, ClaimsPrincipal user)
@@ -39,9 +32,6 @@ public class StringsDomain
             return null;
         }
 
-        var newString = new StringEntity(value);
-        _context.Strings.Add(newString);
-        _context.SaveChanges();
-        return newString;
+        return _dataAccess.AddString(value);
     }
 }
