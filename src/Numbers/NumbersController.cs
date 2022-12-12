@@ -2,7 +2,7 @@ using Bad.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bad.Controllers;
+namespace Bad.Numbers;
 
 [ApiController]
 [Route("[controller]")]
