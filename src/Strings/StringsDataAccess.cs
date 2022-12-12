@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bad.Strings;
 
-public class StringsDataAccess
+public class StringsDataAccess : IStringsDataAccess
 {
     private readonly BadDbContext _context;
 

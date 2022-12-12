@@ -12,8 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<INumbersDataAccess, NumbersDataAccess>();
-builder.Services.AddTransient<StringsDataAccess>();
-builder.Services.AddTransient<StringsDomain>();
+builder.Services.AddTransient<IStringsDataAccess, StringsDataAccess>();
+builder.Services.AddTransient<IStringsDomain, StringsDomain>();
 
 builder.Services.AddDbContext<BadDbContext>(opt =>
 {

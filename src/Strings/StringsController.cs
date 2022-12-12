@@ -7,8 +7,8 @@ namespace Bad.Strings;
 [Route("[controller]")]
 public class StringsController : ControllerBase
 {
-    private readonly StringsDomain _badDomain;
-    public StringsController(StringsDomain badDomain)
+    private readonly IStringsDomain _badDomain;
+    public StringsController(IStringsDomain badDomain)
     {
         _badDomain = badDomain;
     }
