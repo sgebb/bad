@@ -1,27 +1,26 @@
 using Bad.Database;
 using Bad.Strings;
+using FakeItEasy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Xunit;
 
 namespace Bad.Tests;
 
 public class StringsTests
 {
-    private readonly BadDbContext _dbContext;
 
-    public StringsTests()
+    [Fact(DisplayName = "Test that database can store and fetch strings")]
+    public void TestStoringStringsInDatabase()
     {
         var dbContextOptions = new DbContextOptionsBuilder<BadDbContext>()
         .UseInMemoryDatabase(databaseName: "bad")
         .Options;
 
-        _dbContext = new BadDbContext(dbContextOptions);
-    }
+        var dbContext = new BadDbContext(dbContextOptions);
 
-    [Fact(DisplayName = "Test that database can store and fetch strings")]
-    public void TestStoringStringsInDatabase()
-    {
-        var dataAccess = new StringsDataAccess(_dbContext);
+        var dataAccess = new StringsDataAccess(dbContext);
 
         var stored = dataAccess.AddString("test");
         Assert.NotNull(stored?.Id);
@@ -35,28 +34,78 @@ public class StringsTests
     [Fact(DisplayName = "Most people can't store strings during nighttime")]
     public void TestNighttimeWithoutAccess()
     {
-        // but it's daytime right Now()...
-        Assert.True(true);
+        var nightTimeProvider = A.Fake<ITimeProvider>();
+        A.CallTo(() => nightTimeProvider.Now()).Returns(new DateTimeOffset(2022, 10, 10, 03, 10, 10, TimeSpan.Zero));
+
+        var noAccessClaimsAnalyzer = A.Fake<IClaimsAnalyzer>();
+        A.CallTo(() => noAccessClaimsAnalyzer.HasNightPrivileges(A<ClaimsPrincipal>._)).Returns(false);
+
+        var stringToStore = Guid.NewGuid().ToString();
+
+        var makeObjectDbAccess = A.Fake<IStringsDataAccess>();
+        A.CallTo(() => makeObjectDbAccess.AddString(A<string>._)).Returns(new StringEntity(stringToStore));
+
+        var domain = new StringsDomain(makeObjectDbAccess, nightTimeProvider, noAccessClaimsAnalyzer);
+        var respons = domain.AddString(stringToStore, new ClaimsPrincipal());
+
+        Assert.Null(respons); //meaning string was not stored...
     }
 
     [Fact(DisplayName = "Users with special privileges can store strings during nighttime")]
     public void TestNighttimeWithAccess()
     {
-        // creating the ClaimsPrincipal-object is complicated - and do I really want to be testing the ClaimsAnalyser at the same time?
-        Assert.True(true);
+        var nightTimeProvider = A.Fake<ITimeProvider>();
+        A.CallTo(() => nightTimeProvider.Now()).Returns(new DateTimeOffset(2022, 10, 10, 03, 10, 10, TimeSpan.Zero));
+
+        var hasAccessClaimsAnalyzer = A.Fake<IClaimsAnalyzer>();
+        A.CallTo(() => hasAccessClaimsAnalyzer.HasNightPrivileges(A<ClaimsPrincipal>._)).Returns(true);
+
+        var stringToStore = Guid.NewGuid().ToString();
+
+        var makeObjectDbAccess = A.Fake<IStringsDataAccess>();
+        A.CallTo(() => makeObjectDbAccess.AddString(A<string>._)).Returns(new StringEntity(stringToStore));
+
+        var domain = new StringsDomain(makeObjectDbAccess, nightTimeProvider, hasAccessClaimsAnalyzer);
+        var respons = domain.AddString(stringToStore, new ClaimsPrincipal());
+
+        Assert.NotNull(respons);
+        Assert.Equal(stringToStore, respons.Value);
     }
 
     [Fact(DisplayName = "Anyone can store strings during daytime")]
     public void TestDaytime()
     {
-        // what if someone runs this test at night??!
-        Assert.True(true);
+        var daytimeProvider = A.Fake<ITimeProvider>();
+        A.CallTo(() => daytimeProvider.Now()).Returns(new DateTimeOffset(2022, 10, 10, 14, 10, 10, TimeSpan.Zero));
+
+        var noClaimsAnalyzer = A.Fake<IClaimsAnalyzer>();
+        A.CallTo(() => noClaimsAnalyzer.HasNightPrivileges(A<ClaimsPrincipal>._)).Returns(false);
+
+        var stringToStore = Guid.NewGuid().ToString();
+
+        var makeObjectDbAccess = A.Fake<IStringsDataAccess>();
+        A.CallTo(() => makeObjectDbAccess.AddString(A<string>._)).Returns(new StringEntity(stringToStore));
+
+        var domain = new StringsDomain(makeObjectDbAccess, daytimeProvider, noClaimsAnalyzer);
+        var respons = domain.AddString(stringToStore, new ClaimsPrincipal());
+
+        Assert.NotNull(respons);
+        Assert.Equal(stringToStore, respons.Value);
     }
 
     [Fact(DisplayName = "If for whatever reason the string is stored successfully, the http-response should contain a location header pointing to the created resource")]
     public void TestStoreStringLocationHeader()
     {
-        // don't really want to set up everything for BadDomain here
-        Assert.True(true);
+        var stringToStore = Guid.NewGuid().ToString();
+
+        var fakeDomain = A.Fake<IStringsDomain>();
+        A.CallTo(() => fakeDomain.AddString(A<string>._, A<ClaimsPrincipal>._)).Returns(new StringEntity(stringToStore) { Id = 1 });
+        var controller = new StringsController(fakeDomain);
+
+        var response = controller.StoreString(stringToStore);
+
+        var createdResult = Assert.IsType<CreatedResult>(response.Result);
+        Assert.Equal("/1", createdResult.Location);
+        Assert.Equal(201, createdResult.StatusCode);
     }
 }

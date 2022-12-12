@@ -6,10 +6,14 @@ namespace Bad.Strings;
 public class StringsDomain : IStringsDomain
 {
     private readonly IStringsDataAccess _dataAccess;
+    private readonly IClaimsAnalyzer _claimsAnalyzer;
+    private readonly ITimeProvider _timeProvider;
 
-    public StringsDomain(IStringsDataAccess dataAccess)
+    public StringsDomain(IStringsDataAccess dataAccess, ITimeProvider timeProvider, IClaimsAnalyzer claimsAnalyzer)
     {
         _dataAccess = dataAccess;
+        _timeProvider = timeProvider;
+        _claimsAnalyzer = claimsAnalyzer;
     }
 
     public IAsyncEnumerable<StringEntity> GetAllStrings()
@@ -24,9 +28,9 @@ public class StringsDomain : IStringsDomain
 
     public StringEntity? AddString(string value, ClaimsPrincipal user)
     {
-        var now = DateTimeOffset.UtcNow;
+        var now = _timeProvider.Now();
         var isNighttime = now.Hour > 0 && now.Hour < 7;
-        if (isNighttime && !ClaimsAnalyser.HasNightPrivileges(user))
+        if (isNighttime && !_claimsAnalyzer.HasNightPrivileges(user))
         {
             return null;
         }

@@ -14,6 +14,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<INumbersDataAccess, NumbersDataAccess>();
 builder.Services.AddTransient<IStringsDataAccess, StringsDataAccess>();
 builder.Services.AddTransient<IStringsDomain, StringsDomain>();
+builder.Services.AddTransient<ITimeProvider, TimeProvider>();
+builder.Services.AddTransient<IClaimsAnalyzer,ClaimsAnalyzer>();
 
 builder.Services.AddDbContext<BadDbContext>(opt =>
 {

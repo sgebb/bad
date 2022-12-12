@@ -2,9 +2,9 @@
 
 namespace Bad.Strings;
 
-public static class ClaimsAnalyser
+public class ClaimsAnalyzer : IClaimsAnalyzer
 {
-    public static bool HasNightPrivileges(ClaimsPrincipal user)
+    public bool HasNightPrivileges(ClaimsPrincipal user)
     {
         // this code is not correct, but I don't want you to fix it. Write tests that assume that this code is correct
         if (!user.Identities.FirstOrDefault()!.IsAuthenticated)
