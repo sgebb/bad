@@ -1,50 +1,50 @@
 using Bad.Controllers;
-using Bad.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Xunit;
 
-namespace Bad.tests
+namespace Bad.Tests
 {
     public class NumbersTest
     {
+        private readonly IConfiguration _config;
 
-        private IConfiguration _config;
-        [SetUp]
-        public void Setup()
+        public NumbersTest()
         {
-            // i don't really want test data polluting the normal db
-            // but this seems like a lot of work
-            // and now the test-database is longlived and needs to be maintained
-
+            // this assumes that the database already exists (which is only true if you've already started the application)
+            // it means that tests are potentially filling the real database with test-data
             _config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
         }
 
-        [Test(Description = "Test that after I store a number I can fetch the same number afterwards")]
-        public async Task TestSomeControllerSpecificThing()
+        [Fact(DisplayName = "API can store a number and fetch it afterwards")]
+        public async Task TestControllerStoreAndFetch()
         {
-            // this feels very framework specific
+            // this is ok, but if it fails I really have no idea what is wrong
+
             var numbersController = new NumbersController(_config);
             var desiredNumber = 1;
 
-            var response = await numbersController.StoreNumberBetween(1);
+            var response = await numbersController.PostNumber(1);
             var resultObject = GetObjectResultContent(response);
-            Assert.That(resultObject.Id, Is.Not.Null);
+            Assert.NotNull(resultObject.Id);
 
             var fetched = await numbersController.GetNumber(resultObject.Id.Value);
             var fetchedObject = GetObjectResultContent(fetched);
-            Assert.That(fetchedObject, Is.Not.Null);
-            Assert.That(fetchedObject.Value, Is.EqualTo(desiredNumber));
+
+            Assert.Equal(fetchedObject.Value, desiredNumber);
         }
 
-        [Test(Description = "Test that adding and retrieving number works in the database (not the controller)")]
-        public void TestDatabase()
+        [Fact(DisplayName = "Adding and retrieving number works in the database (not the controller)")]
+        public void TestDatabaseLayer()
         {
-            // i don't want to just repeat all the database-specific code that is already in the code, i want to tes that it works
-            Assert.Pass();
+            // I want to test the db-code, but i don't want to just repeat all the DB related code in NumbersController
+            // would be nice to have a db-layer
+            Assert.True(true);
         }
 
+        // helps make sense of ActionResult-objects returned from aspnet-controllers
         private static T GetObjectResultContent<T>(ActionResult<T> result)
         {
             return (T)((ObjectResult)result.Result).Value;

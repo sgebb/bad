@@ -1,8 +1,4 @@
-﻿Hva gjør applikasjonen:
-api for å lagre strings og tall i en database, og å lese dem ut
-kan kun legge inn nye strings om dagen
-
-takeaway general
+﻿takeaway general
 unit tests should be specific so that it's easy to see what is broken
 static can't be mocked
 classes need interfaces to be mocked
@@ -24,9 +20,6 @@ I want to test my business-logic without making a complex claims-principal objec
 further reading
 law of demeter
 avoid singletons or globals with state
-
-
-
 
 ha egne repo/brancher per vanskelighetsgrad
 intro først: litt om test, og hvordan skrive testbar kode

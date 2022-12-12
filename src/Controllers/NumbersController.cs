@@ -35,7 +35,7 @@ public class NumbersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<NumberEntity>> StoreNumberBetween(int value)
+    public async Task<ActionResult<NumberEntity>> PostNumber(int value)
     {
         var number = new NumberEntity(value);
         _context.Numbers.Add(number);
