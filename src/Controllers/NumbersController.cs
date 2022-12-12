@@ -27,19 +27,19 @@ public class NumbersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<NumberEntity>> GetNumber(int id)
+    public ActionResult<NumberEntity> GetNumber(int id)
     {
-        return Ok(await _context
+        return Ok(_context
             .Numbers
-            .FirstOrDefaultAsync(n => n.Id == id));
+            .FirstOrDefault(n => n.Id == id));
     }
 
     [HttpPost]
-    public async Task<ActionResult<NumberEntity>> PostNumber(int value)
+    public ActionResult<NumberEntity> PostNumber(int value)
     {
         var number = new NumberEntity(value);
         _context.Numbers.Add(number);
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
 
         return Created($"[controller]/{number.Id!.Value}", number);
     }
