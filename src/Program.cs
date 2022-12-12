@@ -1,4 +1,6 @@
 using Bad.Database;
+using Bad.Numbers;
+using Bad.Strings;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient<INumbersDataAccess, NumbersDataAccess>();
+builder.Services.AddTransient<StringsDataAccess>();
+builder.Services.AddTransient<StringsDomain>();
 
 builder.Services.AddDbContext<BadDbContext>(opt =>
 {

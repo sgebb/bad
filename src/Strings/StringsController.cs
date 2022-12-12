@@ -33,7 +33,7 @@ public class StringsController : ControllerBase
 
         if (storedString == null)
         {
-            return BadRequest("Uh not sure why but that was not good enough");
+            return Unauthorized();
         }
 
         return Created($"/{storedString.Id}", storedString);

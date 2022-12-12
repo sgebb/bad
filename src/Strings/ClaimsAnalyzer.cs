@@ -4,9 +4,9 @@ namespace Bad.Strings;
 
 public static class ClaimsAnalyser
 {
-    // lets assume that this code is valid
     public static bool HasNightPrivileges(ClaimsPrincipal user)
     {
+        // this code is not correct, but I don't want you to fix it. Write tests that assume that this code is correct
         if (!user.Identities.FirstOrDefault()!.IsAuthenticated)
         {
             return false;
@@ -17,6 +17,6 @@ public static class ClaimsAnalyser
             return false;
         }
 
-        return user.HasClaim(c => c.Issuer == "issuer" && c.Type == "adgroup" && c.Value == "night-adgroup");
+        return user.HasClaim(c => c.Issuer == "computas" && c.Type == "adgroup" && c.Value == "night-adgroup");
     }
 }

@@ -27,11 +27,6 @@ public class StringsDomain
             .AsNoTracking()
             .FirstOrDefault(s => s.Id == id);
 
-        if (dbString == null)
-        {
-            return null;
-        }
-
         return dbString;
     }
 

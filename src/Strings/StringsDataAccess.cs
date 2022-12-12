@@ -1,10 +1,9 @@
 ﻿using Bad.Database;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Bad.Strings;
 
-public class StringsDataAccess : IStringsDataAccess
+public class StringsDataAccess
 {
     private readonly BadDbContext _context;
 
@@ -28,15 +27,8 @@ public class StringsDataAccess : IStringsDataAccess
                 .FirstOrDefault(s => s.Id == id);
     }
 
-    public StringEntity? AddString(string value, ClaimsPrincipal user)
+    public StringEntity AddString(string value)
     {
-        var now = DateTimeOffset.UtcNow;
-        var isNighttime = now.Hour > 0 && now.Hour < 7;
-        if (isNighttime && !ClaimsAnalyser.HasNightPrivileges(user))
-        {
-            return null;
-        }
-
         var newString = new StringEntity(value);
         _context.Strings.Add(newString);
         _context.SaveChanges();
