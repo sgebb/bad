@@ -8,20 +8,17 @@ namespace Bad.Controllers;
 [Route("[controller]")]
 public class NumbersController : ControllerBase
 {
-    private readonly BadDbContext _context;
+    private readonly BadDbContext _badDbContext;
 
-    public NumbersController(IConfiguration configuration)
+    public NumbersController(BadDbContext badDbContext)
     {
-        var connectionString = DbHelper.DbConnectionString(configuration);
-        var optionsBuilder = new DbContextOptionsBuilder<BadDbContext>();
-        optionsBuilder.UseSqlServer(connectionString);
-        _context = new BadDbContext(optionsBuilder.Options);
+        _badDbContext = badDbContext;
     }
 
     [HttpGet]
     public ActionResult<IAsyncEnumerable<NumberEntity>> GetNumbers()
     {
-        return Ok(_context
+        return Ok(_badDbContext
             .Numbers
             .AsAsyncEnumerable());
     }
@@ -29,7 +26,7 @@ public class NumbersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<NumberEntity>> GetNumber(int id)
     {
-        return Ok(await _context
+        return Ok(await _badDbContext
             .Numbers
             .FirstOrDefaultAsync(n => n.Id == id));
     }
@@ -38,8 +35,8 @@ public class NumbersController : ControllerBase
     public async Task<ActionResult<NumberEntity>> PostNumber(int value)
     {
         var number = new NumberEntity(value);
-        _context.Numbers.Add(number);
-        await _context.SaveChangesAsync();
+        _badDbContext.Numbers.Add(number);
+        await _badDbContext.SaveChangesAsync();
 
         return Created($"[controller]/{number.Id!.Value}", number);
     }

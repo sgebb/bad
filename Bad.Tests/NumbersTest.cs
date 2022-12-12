@@ -1,5 +1,7 @@
 using Bad.Controllers;
+using Bad.Database;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
@@ -7,23 +9,20 @@ namespace Bad.Tests
 {
     public class NumbersTest
     {
-        private readonly IConfiguration _config;
+        private readonly BadDbContext _badDbContext;
 
         public NumbersTest()
         {
-            // this assumes that the database already exists (which is only true if you've already started the application)
-            // it means that tests are potentially filling the real database with test-data
-            _config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
+            var dbContextOptions = new DbContextOptionsBuilder<BadDbContext>()
+            .UseInMemoryDatabase(databaseName: "MyBlogDb")
+            .Options;
+            _badDbContext = new BadDbContext(dbContextOptions);
         }
 
         [Fact(DisplayName = "API can store a number and fetch it afterwards")]
         public async Task TestControllerStoreAndFetch()
         {
-            // this is ok, but if it fails I really have no idea what is wrong
-
-            var numbersController = new NumbersController(_config);
+            var numbersController = new NumbersController(_badDbContext);
             var desiredNumber = 1;
 
             var response = await numbersController.PostNumber(1);
