@@ -41,6 +41,7 @@ public class NumbersTest
     {
         // I want to test the db-code, but i don't want to just repeat all the DB related code in NumbersController
         // would be nice to have a db-layer
+
         Assert.True(true);
     }
 

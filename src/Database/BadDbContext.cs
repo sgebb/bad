@@ -6,8 +6,9 @@ namespace Bad.Database
     {
         public BadDbContext(DbContextOptions<BadDbContext> options) : base(options) {}
 
-        public DbSet<StringEntity> Strings { get; set; }
-
         public DbSet<NumberEntity> Numbers { get; set; }
+
+        // NOT RELEVANT YET
+        public DbSet<StringEntity> Strings { get; set; }
     }
 }
