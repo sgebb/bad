@@ -21,7 +21,7 @@ public class NumbersTest
     [Fact(DisplayName = "API can store a number and fetch it afterwards")]
     public void TestControllerStoreAndFetch()
     {
-        // this is ok, but if it fails I really have no idea what is wrong
+        // this is ok, but the ActionResult-stuff in the asp.net controller makes the test a bit hard to read
 
         var numbersController = new NumbersController(_config);
         var desiredNumber = 1;
@@ -40,7 +40,7 @@ public class NumbersTest
     public void TestDatabaseLayer()
     {
         // I want to test the db-code, but i don't want to just repeat all the DB related code in NumbersController
-        // would be nice to have a db-layer
+        // make a DB-layer so it can be tested more directly
 
         Assert.True(true);
     }
